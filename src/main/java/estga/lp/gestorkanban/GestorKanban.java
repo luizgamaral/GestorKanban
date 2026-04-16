@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  */
 
-package estga.poo.gestorkanban;
+package estga.lp.gestorkanban;
 
 // Importando as classes da biblioteca 
 import lp.trabalho1.IODataClass;
