@@ -17,9 +17,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import estga.lp.gestorkanban.controller.Controlo;
 import estga.lp.gestorkanban.view.Interface;
 import javax.swing.SwingUtilities;
-
 
 /*
  *
@@ -27,13 +27,17 @@ import javax.swing.SwingUtilities;
  */
 
 public class GestorKanban {
-
     public static void main(String[] args) {
-        //Iniciar a interface Swing
         SwingUtilities.invokeLater(new Runnable(){
             @Override
             public void run(){
+                // 1. Cria a Interface (View)
                 Interface gui = new Interface();
+                
+                // 2. Cria o Controlo (Controller) e passa a Interface para ele controlar
+                Controlo controlo = new Controlo(gui);
+                
+                // 3. Mostra a interface
                 gui.setVisible(true);
             }
         });

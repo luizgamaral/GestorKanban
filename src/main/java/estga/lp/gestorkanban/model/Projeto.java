@@ -9,39 +9,34 @@ package estga.lp.gestorkanban.model;
  * @author luizi
  */
 
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Projeto implements Serializable {
     private String nome;
-    private ArrayList<Tarefa> tarefas; // Lista que guarda as tarefas do Kanban
+    private String descricao; // NOVO ATRIBUTO
+    private ArrayList<Tarefa> tarefas;
 
-    public Projeto(String nome) {
+    // Construtor atualizado
+    public Projeto(String nome, String descricao) {
         this.nome = nome;
+        this.descricao = descricao;
         this.tarefas = new ArrayList<>();
     }
 
     // Getters e Setters
-    
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }
+
+    public String getDescricao() { return descricao; }
+    public void setDescricao(String descricao) { this.descricao = descricao; }
 
     public ArrayList<Tarefa> getTarefas() { return tarefas; }
     public void setTarefas(ArrayList<Tarefa> tarefas) { this.tarefas = tarefas; }
 
-    // Logica
-
-    //  Adiciona uma nova tarefa ao projeto
-    
-    public void adicionarTarefa(Tarefa t) {
-        this.tarefas.add(t);
-    }
-
-     // Remove uma tarefa do projeto
-    
-    public void removerTarefa(Tarefa t) {
-        this.tarefas.remove(t);
-    }
+    public void adicionarTarefa(Tarefa t) { this.tarefas.add(t); }
+    public void removerTarefa(Tarefa t) { this.tarefas.remove(t); }
 
     @Override
     public String toString() {
