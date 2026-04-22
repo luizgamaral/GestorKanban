@@ -26,6 +26,7 @@ public class Interface extends JFrame {
     private JButton btnNovaTarefa; // Novo botão para tarefas
     private JButton btnGuardar;  // NOVO
     private JButton btnCarregar; // NOVO
+    private JButton btnEquipa;
     
     // Painéis das Colunas Kanban
     private JPanel painelAFazer;
@@ -115,7 +116,7 @@ public class Interface extends JFrame {
         
         btnNovaTarefa = new JButton("➕ NOVA TAREFA");
         JButton btnConfig = new JButton("⚙ CONFIGURAÇÕES");
-        JButton btnEquipa = new JButton("👥 GERIR EQUIPA");
+        btnEquipa = new JButton("👥 GERIR EQUIPA");
         btnGuardar = new JButton("💾 GUARDAR DADOS");
         btnCarregar = new JButton("📂 CARREGAR DADOS");
         
@@ -179,7 +180,7 @@ public class Interface extends JFrame {
     }
     
     // Método que o Controller vai chamar para adicionar um cartão visual
-    public void adicionarCartaoTarefa(String titulo, String descricao, String prioridade, String data, String estado, 
+    public void adicionarCartaoTarefa(String titulo, String descricao, String prioridade, String data, String estado, String membro,
                                       java.awt.event.ActionListener acaoEditar, 
                                       java.awt.event.ActionListener acaoEliminar,
                                       java.awt.event.ActionListener acaoMover) {
@@ -225,12 +226,32 @@ public class Interface extends JFrame {
         lblDescricao.setBorder(new EmptyBorder(5, 0, 5, 0));
 
         // --- BASE: Informações ---
-        JPanel infoPanel = new JPanel(new GridLayout(2, 2));
+        JPanel infoPanel = new JPanel(new GridLayout(3, 2)); // 3 Linhas, 2 Colunas
         infoPanel.setBackground(Color.WHITE);
+        
+        // Linha 1: Cabeçalhos
         infoPanel.add(new JLabel("Prioridade: "));
         infoPanel.add(new JLabel("Data: "));
-        infoPanel.add(new JLabel(prioridade));
+        
+        // Linha 2: Valores (COM CORES)
+        JLabel lblValorPrioridade = new JLabel(prioridade);
+        lblValorPrioridade.setFont(new Font("Arial", Font.BOLD, 12)); // Fica a negrito para destacar a cor
+        
+        // Aplicar a cor dependendo da prioridade
+        if (prioridade.equals("Alta")) {
+            lblValorPrioridade.setForeground(Color.RED); // Vermelho
+        } else if (prioridade.equals("Média")) {
+            lblValorPrioridade.setForeground(new Color(204, 153, 0)); // Amarelo/Laranja escuro (para se ler bem no fundo branco)
+        } else if (prioridade.equals("Baixa")) {
+            lblValorPrioridade.setForeground(new Color(0, 153, 0)); // Verde escuro
+        }
+        
+        infoPanel.add(lblValorPrioridade); // Adiciona a etiqueta com cor
         infoPanel.add(new JLabel(data));
+        
+        // Linha 3: Membro
+        infoPanel.add(new JLabel("Membro: "));
+        infoPanel.add(new JLabel(membro != null && !membro.trim().isEmpty() ? membro : "Sem Membro"));
         
         // Agrupar tudo
         JPanel centerPanel = new JPanel(new BorderLayout());
@@ -263,4 +284,5 @@ public class Interface extends JFrame {
     public JButton getBtnNovaTarefa() { return btnNovaTarefa; }
     public JButton getBtnGuardar() { return btnGuardar; }
     public JButton getBtnCarregar() { return btnCarregar; }
+    public JButton getBtnEquipa() { return btnEquipa; }
 }

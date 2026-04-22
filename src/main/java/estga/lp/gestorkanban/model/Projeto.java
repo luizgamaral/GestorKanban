@@ -17,12 +17,14 @@ public class Projeto implements Serializable {
     private String nome;
     private String descricao; // NOVO ATRIBUTO
     private ArrayList<Tarefa> tarefas;
+    private ArrayList<String> equipa;
 
     // Construtor atualizado
     public Projeto(String nome, String descricao) {
         this.nome = nome;
         this.descricao = descricao;
         this.tarefas = new ArrayList<>();
+        this.equipa = new ArrayList<>();
     }
 
     // Getters e Setters
@@ -37,6 +39,15 @@ public class Projeto implements Serializable {
 
     public void adicionarTarefa(Tarefa t) { this.tarefas.add(t); }
     public void removerTarefa(Tarefa t) { this.tarefas.remove(t); }
+    
+    // Métodos de Equipa
+    public ArrayList<String> getEquipa() { return equipa; }
+    public void adicionarMembro(String membro) {
+        if (!equipa.contains(membro)) {
+            this.equipa.add(membro);
+        }
+    }
+    public void removerMembro(String membro) { this.equipa.remove(membro); }
 
     @Override
     public String toString() {
