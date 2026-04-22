@@ -12,9 +12,13 @@ package estga.lp.gestorkanban.controller;
 import estga.lp.gestorkanban.model.Projeto;
 import estga.lp.gestorkanban.model.Tarefa;
 import estga.lp.gestorkanban.view.Interface;
+import java.awt.Dimension;
+import java.awt.Font;
 
 import javax.swing.JOptionPane;
 import java.util.ArrayList;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 public class Controlo {
     
@@ -51,15 +55,46 @@ private void inicializarEventos() {
             }
         });
         
-        // Lógica de Editar Projeto
+        // Lógica de Editar Projeto 
         view.getBtnEditarProjeto().addActionListener(e -> {
             int index = view.getListaProjetos().getSelectedIndex();
             if (index != -1){
-                String projetoAtual = view.getListaProjetosModel().getElementAt(index);
-                String novoNome = (String) JOptionPane.showInputDialog(view, "Editar nome do projeto: ", "Editar Projeto", JOptionPane.QUESTION_MESSAGE, null, null, projetoAtual);
+                Projeto projetoSelecionado = listaProjetos.get(index);
+                
+                // 1. Editar o Nome
+                String novoNome = (String) JOptionPane.showInputDialog(
+                        view, 
+                        "Editar nome do projeto:", 
+                        "Editar Projeto", 
+                        JOptionPane.QUESTION_MESSAGE, 
+                        null, 
+                        null, 
+                        projetoSelecionado.getNome()
+                );
+                
                 if (novoNome != null && !novoNome.trim().isEmpty()){
-                    listaProjetos.get(index).setNome(novoNome.toUpperCase());
-                    view.getListaProjetosModel().set(index, novoNome.toUpperCase());
+                    // 2. Editar a Descrição (NOVO)
+                    String novaDesc = (String) JOptionPane.showInputDialog(
+                            view, 
+                            "Editar descrição do projeto:", 
+                            "Editar Descrição", 
+                            JOptionPane.QUESTION_MESSAGE, 
+                            null, 
+                            null, 
+                            projetoSelecionado.getDescricao()
+                    );
+                    
+                    if (novaDesc != null) {
+                        // Atualiza o Model
+                        projetoSelecionado.setNome(novoNome.toUpperCase());
+                        projetoSelecionado.setDescricao(novaDesc);
+                        
+                        // Atualiza a View (Lista Lateral)
+                        view.getListaProjetosModel().set(index, novoNome.toUpperCase());
+                        
+                        // Opcional: Se este for o projeto selecionado, atualiza o título na barra de topo se necessário
+                        JOptionPane.showMessageDialog(view, "Projeto atualizado com sucesso!");
+                    }
                 }
             } else {
                 JOptionPane.showMessageDialog(view, "Por favor, selecione um projeto para editar.", "Aviso", JOptionPane.WARNING_MESSAGE);
@@ -93,7 +128,8 @@ private void inicializarEventos() {
             int index = view.getListaProjetos().getSelectedIndex();
             if (index != -1) {
                 Projeto projetoSelecionado = listaProjetos.get(index);
-                String[] opcoes = {"Adicionar Membro", "Remover Membro", "Ver Equipa"};
+                //  Adicionada a opção "Atribuir Tarefa"
+                String[] opcoes = {"Adicionar Membro", "Remover Membro", "Ver Equipa", "Atribuir Tarefa"};
                 
                 int escolha = JOptionPane.showOptionDialog(view, 
                         "Gestão de Equipa - O que deseja fazer?", 
@@ -137,6 +173,45 @@ private void inicializarEventos() {
                         JOptionPane.showMessageDialog(view, "Membros da Equipa:\n- " + String.join("\n- ", equipa), "Equipa", JOptionPane.INFORMATION_MESSAGE);
                     }
                 }
+                else if (escolha == 3) { //  Atribuir Tarefa
+                    ArrayList<Tarefa> tarefas = projetoSelecionado.getTarefas();
+                    ArrayList<String> equipa = projetoSelecionado.getEquipa();
+
+                    // Validações de segurança
+                    if (tarefas.isEmpty()) {
+                        JOptionPane.showMessageDialog(view, "Não há tarefas neste projeto para atribuir.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                        return;
+                    }
+                    if (equipa.isEmpty()) {
+                        JOptionPane.showMessageDialog(view, "A equipa não tem membros. Adicione membros primeiro.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                        return;
+                    }
+
+                    // 1. O utilizador seleciona a tarefa
+                    Tarefa tarefaSelecionada = (Tarefa) JOptionPane.showInputDialog(view, 
+                            "Selecione a tarefa que deseja atribuir:", "Atribuir Tarefa", 
+                            JOptionPane.QUESTION_MESSAGE, null, tarefas.toArray(), tarefas.get(0));
+
+                    if (tarefaSelecionada != null) {
+                        // 2. Prepara a lista de membros (incluindo "Sem Membro")
+                        String[] opcoesMembros = new String[equipa.size() + 1];
+                        opcoesMembros[0] = "Sem Membro";
+                        for (int i = 0; i < equipa.size(); i++) {
+                            opcoesMembros[i + 1] = equipa.get(i);
+                        }
+
+                        // 3. O utilizador seleciona o membro
+                        String membroAtribuido = (String) JOptionPane.showInputDialog(view, 
+                                "Atribuir a tarefa '" + tarefaSelecionada.getTitulo() + "' a qual membro?", "Selecionar Membro", 
+                                JOptionPane.QUESTION_MESSAGE, null, opcoesMembros, tarefaSelecionada.getMembro());
+
+                        if (membroAtribuido != null) {
+                            tarefaSelecionada.setMembro(membroAtribuido);
+                            atualizarQuadroTarefas(); // Redesenha os cartões instantaneamente
+                            JOptionPane.showMessageDialog(view, "Tarefa atualizada com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                        }
+                    }
+                }
             } else {
                 JOptionPane.showMessageDialog(view, "Por favor, selecione um projeto para gerir a sua equipa.", "Aviso", JOptionPane.WARNING_MESSAGE);
             }
@@ -166,9 +241,9 @@ private void inicializarEventos() {
                     boolean dataValida = false;
                     while (!dataValida) {
                         data = JOptionPane.showInputDialog(view, "Data de Entrega (DD/MM/AAAA):", "Nova Tarefa - Data", JOptionPane.QUESTION_MESSAGE);
-                        if (data == null) return; // Se o utilizador clicar em "Cancelar", aborta a criação
+                        if (data == null) return; // Se o utilizador clicar em Cancelar, aborta a criação
                         
-                        // Expressão regular (Regex) simples para verificar o formato DD/MM/AAAA
+                        // Expressão regular Regex simples para verificar o formato DD/MM/AAAA
                         if (data.matches("^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[012])/\\d{4}$")) {
                             dataValida = true;
                         } else {
@@ -220,7 +295,7 @@ private void inicializarEventos() {
                     nomeFicheiro += ".dat";
                 }
                 
-                // Garante que a pasta "FicheirosSalvos" existe
+                // Garante que a pasta FicheirosSalvos existe
                 java.io.File diretorio = new java.io.File("FicheirosSalvos");
                 if (!diretorio.exists()) {
                     diretorio.mkdirs(); // Cria a pasta se ela não existir
@@ -239,42 +314,146 @@ private void inicializarEventos() {
             }
         });
 
-        // Lógica de Carregar Dados
+        // Lógica de Guardar Dados (Usando IODataLibrary)
+        view.getBtnGuardar().addActionListener(e -> {
+            String nomeFicheiro = JOptionPane.showInputDialog(view, "Introduza o nome do ficheiro para guardar:", "Guardar Dados", JOptionPane.QUESTION_MESSAGE);
+            
+            if (nomeFicheiro != null && !nomeFicheiro.trim().isEmpty()) {
+                // Forçar extensão .txt para cumprir o enunciado
+                if (!nomeFicheiro.endsWith(".txt")) {
+                    nomeFicheiro += ".txt";
+                }
+                
+                java.io.File diretorio = new java.io.File("FicheirosSalvos");
+                if (!diretorio.exists()) diretorio.mkdirs(); 
+                
+                String caminho = "FicheirosSalvos/" + nomeFicheiro;
+                
+                try {
+                    // Prepara a lista de Strings para a biblioteca
+                    ArrayList<String> linhasToSave = new ArrayList<>();
+                    
+                    for (Projeto p : listaProjetos) {
+                        // Guarda o projeto
+                        linhasToSave.add("PROJETO|" + p.getNome() + "|" + p.getDescricao());
+                        
+                        // Guarda a equipa do projeto
+                        for (String membro : p.getEquipa()) {
+                            linhasToSave.add("MEMBRO|" + membro);
+                        }
+                        
+                        // Guarda as tarefas do projeto
+                        for (Tarefa t : p.getTarefas()) {
+                            linhasToSave.add("TAREFA|" + t.getTitulo() + "|" + t.getDescricao() + "|" + t.getPrioridade() + "|" + t.getData() + "|" + t.getEstado() + "|" + t.getMembro());
+                        }
+                    }
+                    
+                    // Converte para String[] e usa a IODataLibrary para guardar
+                    trabalho2.IODataClass io = new trabalho2.IODataClass();
+                    io.writeData(caminho, linhasToSave.toArray(new String[0]));
+                    
+                    JOptionPane.showMessageDialog(view, "Dados guardados com sucesso em formato de texto!\n" + caminho, "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                    
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(view, "Erro ao guardar dados: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                    ex.printStackTrace();
+                }
+            }
+        });
+
+        // Lógica de Carregar Dados (Usando IODataLibrary)
         view.getBtnCarregar().addActionListener(e -> {
-            // Pede o nome do ficheiro ao utilizador
             String nomeFicheiro = JOptionPane.showInputDialog(view, "Introduza o nome do ficheiro a carregar:", "Carregar Dados", JOptionPane.QUESTION_MESSAGE);
             
             if (nomeFicheiro != null && !nomeFicheiro.trim().isEmpty()) {
-                
-                // Adiciona a extensão .dat automaticamente caso o utilizador se esqueça
-                if (!nomeFicheiro.endsWith(".dat")) {
-                    nomeFicheiro += ".dat";
+                if (!nomeFicheiro.endsWith(".txt")) {
+                    nomeFicheiro += ".txt";
                 }
                 
                 String caminho = "FicheirosSalvos/" + nomeFicheiro;
                 
-                try (java.io.ObjectInputStream ois = new java.io.ObjectInputStream(new java.io.FileInputStream(caminho))) {
+                try {
+                    // Usa a IODataLibrary para ler as linhas
+                    trabalho2.IODataClass io = new trabalho2.IODataClass();
+                    String[] linhasCarregadas = io.loadData(caminho);
                     
-                    // 1. Carrega os dados para o Model
-                    listaProjetos = (ArrayList<Projeto>) ois.readObject();
-                    
-                    // 2. Limpa a View atual
+                    // Limpa os dados atuais
+                    listaProjetos.clear();
                     view.getListaProjetosModel().clear();
                     view.limparQuadro();
                     
-                    // 3. Preenche a lista lateral com os projetos carregados
-                    for (Projeto p : listaProjetos) {
-                        view.getListaProjetosModel().addElement(p.getNome());
+                    Projeto projetoAtual = null; // Ajuda a saber a qual projeto as tarefas e membros pertencem
+                    
+                    // Reconstrói os objetos a partir do texto
+                    for (String linha : linhasCarregadas) {
+                        // O regex "\\|" é usado para separar pelo caractere |
+                        String[] partes = linha.split("\\|"); 
+                        
+                        if (partes[0].equals("PROJETO") && partes.length >= 3) {
+                            projetoAtual = new Projeto(partes[1], partes[2]);
+                            listaProjetos.add(projetoAtual);
+                            view.getListaProjetosModel().addElement(projetoAtual.getNome());
+                            
+                        } else if (partes[0].equals("MEMBRO") && partes.length >= 2 && projetoAtual != null) {
+                            projetoAtual.adicionarMembro(partes[1]);
+                            
+                        } else if (partes[0].equals("TAREFA") && partes.length >= 7 && projetoAtual != null) {
+                            Tarefa t = new Tarefa(partes[1], partes[2], partes[3], partes[4], partes[5], partes[6]);
+                            projetoAtual.adicionarTarefa(t);
+                        }
                     }
                     
                     JOptionPane.showMessageDialog(view, "Dados carregados com sucesso de:\n" + caminho, "Sucesso", JOptionPane.INFORMATION_MESSAGE);
                     
-                } catch (java.io.FileNotFoundException ex) {
-                    JOptionPane.showMessageDialog(view, "O ficheiro '" + nomeFicheiro + "' não foi encontrado na pasta FicheirosSalvos.", "Erro - Ficheiro não encontrado", JOptionPane.WARNING_MESSAGE);
+                } catch (RuntimeException ex) {
+                    JOptionPane.showMessageDialog(view, "Erro ao carregar ficheiro. Verifique se o ficheiro '" + nomeFicheiro + "' existe na pasta FicheirosSalvos.", "Erro", JOptionPane.ERROR_MESSAGE);
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(view, "Erro ao carregar dados: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(view, "Erro ao processar dados: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
                     ex.printStackTrace();
                 }
+            }
+        });
+        
+        // Lógica de Configurações / Detalhes do Projeto
+        view.getBtnConfig().addActionListener(e -> {
+            int index = view.getListaProjetos().getSelectedIndex();
+            
+            if (index != -1) {
+                Projeto projetoSelecionado = listaProjetos.get(index);
+                
+                // Construir a mensagem com os dados do projeto
+                StringBuilder info = new StringBuilder();
+                info.append("TÍTULO DO PROJETO:\n").append(projetoSelecionado.getNome()).append("\n\n");
+                
+                info.append("DESCRIÇÃO:\n");
+                String desc = projetoSelecionado.getDescricao();
+                info.append(desc != null && !desc.trim().isEmpty() ? desc : "Sem descrição.").append("\n\n");
+                
+                info.append("TAREFAS (").append(projetoSelecionado.getTarefas().size()).append("):\n");
+                
+                if (projetoSelecionado.getTarefas().isEmpty()) {
+                    info.append("- Nenhuma tarefa criada.");
+                } else {
+                    for (Tarefa t : projetoSelecionado.getTarefas()) {
+                        // Adiciona o nome da tarefa e o estado atual entre parênteses retos
+                        info.append("- ").append(t.getTitulo()).append(" [").append(t.getEstado()).append("]\n");
+                    }
+                }
+                
+                // Usar uma JTextArea para permitir scroll caso haja muitas tarefas ou uma descrição muito longa
+                JTextArea textArea = new JTextArea(info.toString());
+                textArea.setEditable(false); // Para que o utilizador não possa apagar o texto
+                textArea.setOpaque(false);
+                textArea.setFont(new Font("Arial", Font.PLAIN, 14));
+                
+                JScrollPane scrollPane = new JScrollPane(textArea);
+                scrollPane.setPreferredSize(new Dimension(400, 250)); // Define um tamanho fixo para a janela
+                scrollPane.setBorder(null); // Tira as bordas feias do scroll
+
+                JOptionPane.showMessageDialog(view, scrollPane, "Detalhes do Projeto", JOptionPane.INFORMATION_MESSAGE);
+                
+            } else {
+                JOptionPane.showMessageDialog(view, "Por favor, selecione um projeto para ver os seus detalhes.", "Aviso", JOptionPane.WARNING_MESSAGE);
             }
         });
         
@@ -291,7 +470,7 @@ private void inicializarEventos() {
             // Percorre todas as tarefas do projeto selecionado e desenha-as
             for (Tarefa t : projetoSelecionado.getTarefas()) {
                 
-                // 1. Lógica para MOVER a tarefa
+                // 1. Lógica para mover a tarefa
                 java.awt.event.ActionListener acaoMover = e -> {
                     String[] opcoes = {"A Fazer", "Em Progresso", "Concluído"};
                     String novoEstado = (String) JOptionPane.showInputDialog(
@@ -304,7 +483,7 @@ private void inicializarEventos() {
                     }
                 };
 
-                // 2. Lógica para EDITAR a tarefa
+                // 2. Lógica para editar a tarefa
                 java.awt.event.ActionListener acaoEditar = e -> {
                     String novoTitulo = (String) JOptionPane.showInputDialog(view, "Editar Título:", "Editar Tarefa", JOptionPane.QUESTION_MESSAGE, null, null, t.getTitulo());
                     if (novoTitulo != null && !novoTitulo.trim().isEmpty()) {
@@ -323,7 +502,7 @@ private void inicializarEventos() {
                             t.setPrioridade(novaPrioridade);
                         }
                         
-                        // NOVO: Editar o membro atribuído
+                        // Editar o membro atribuído
                         ArrayList<String> equipa = projetoSelecionado.getEquipa();
                         if (!equipa.isEmpty()) {
                             String[] opcoesMembros = new String[equipa.size() + 1];

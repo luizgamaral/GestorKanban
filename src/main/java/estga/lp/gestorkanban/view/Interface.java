@@ -23,10 +23,11 @@ public class Interface extends JFrame {
     private JButton btnNovoProjeto;
     private JButton btnEditarProjeto;
     private JButton btnEliminarProjeto;
-    private JButton btnNovaTarefa; // Novo botão para tarefas
-    private JButton btnGuardar;  // NOVO
-    private JButton btnCarregar; // NOVO
+    private JButton btnNovaTarefa; 
+    private JButton btnGuardar;  
+    private JButton btnCarregar; 
     private JButton btnEquipa;
+    private JButton btnConfig;
     
     // Painéis das Colunas Kanban
     private JPanel painelAFazer;
@@ -115,7 +116,7 @@ public class Interface extends JFrame {
         panelBotoesDir.setOpaque(false);
         
         btnNovaTarefa = new JButton("➕ NOVA TAREFA");
-        JButton btnConfig = new JButton("⚙ CONFIGURAÇÕES");
+        btnConfig = new JButton("⚙ CONFIGURAÇÕES");
         btnEquipa = new JButton("👥 GERIR EQUIPA");
         btnGuardar = new JButton("💾 GUARDAR DADOS");
         btnCarregar = new JButton("📂 CARREGAR DADOS");
@@ -285,4 +286,5 @@ public class Interface extends JFrame {
     public JButton getBtnGuardar() { return btnGuardar; }
     public JButton getBtnCarregar() { return btnCarregar; }
     public JButton getBtnEquipa() { return btnEquipa; }
+    public JButton getBtnConfig() { return btnConfig; }
 }
