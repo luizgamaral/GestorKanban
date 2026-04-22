@@ -81,7 +81,7 @@ private void inicializarEventos() {
             }
         });
 
-        // NOVO: Atualizar o quadro Kanban quando um projeto diferente é clicado na lista lateral
+        // Atualizar o quadro Kanban quando um projeto diferente é clicado na lista lateral
         view.getListaProjetos().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 atualizarQuadroTarefas();
@@ -102,7 +102,7 @@ private void inicializarEventos() {
                     
                     String prioridade = JOptionPane.showInputDialog(view, "Prioridade (Alta, Média, Baixa):", "Média");
                     
-                    // Validação de Data (NOVO)
+                    // Validação de Data
                     String data = "";
                     boolean dataValida = false;
                     while (!dataValida) {
@@ -127,6 +127,78 @@ private void inicializarEventos() {
                 JOptionPane.showMessageDialog(view, "Por favor, selecione um projeto na lista lateral antes de criar uma tarefa.", "Aviso", JOptionPane.WARNING_MESSAGE);
             }
         });
+        
+        // Lógica de Guardar Dados
+        view.getBtnGuardar().addActionListener(e -> {
+            // Pede o nome do ficheiro ao utilizador
+            String nomeFicheiro = JOptionPane.showInputDialog(view, "Introduza o nome do ficheiro para guardar (ex: projeto_versao1):");
+            
+            // Verifica se o utilizador escreveu algo e não cancelou
+            if (nomeFicheiro != null && !nomeFicheiro.trim().isEmpty()) {
+                
+                // Adiciona a extensão .dat automaticamente se o utilizador não o fizer
+                if (!nomeFicheiro.endsWith(".dat")) {
+                    nomeFicheiro += ".dat";
+                }
+                
+                // Garante que a pasta "FicheirosSalvos" existe
+                java.io.File diretorio = new java.io.File("FicheirosSalvos");
+                if (!diretorio.exists()) {
+                    diretorio.mkdirs(); // Cria a pasta se ela não existir
+                }
+                
+                // Caminho final do ficheiro
+                String caminho = "FicheirosSalvos/" + nomeFicheiro;
+                
+                try (java.io.ObjectOutputStream oos = new java.io.ObjectOutputStream(new java.io.FileOutputStream(caminho))) {
+                    oos.writeObject(listaProjetos);
+                    JOptionPane.showMessageDialog(view, "Dados guardados com sucesso em:\n" + caminho, "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(view, "Erro ao guardar dados: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                    ex.printStackTrace();
+                }
+            }
+        });
+
+        // Lógica de Carregar Dados
+        view.getBtnCarregar().addActionListener(e -> {
+            // Pede o nome do ficheiro ao utilizador
+            String nomeFicheiro = JOptionPane.showInputDialog(view, "Introduza o nome do ficheiro a carregar:");
+            
+            if (nomeFicheiro != null && !nomeFicheiro.trim().isEmpty()) {
+                
+                // Adiciona a extensão .dat automaticamente caso o utilizador se esqueça
+                if (!nomeFicheiro.endsWith(".dat")) {
+                    nomeFicheiro += ".dat";
+                }
+                
+                String caminho = "FicheirosSalvos/" + nomeFicheiro;
+                
+                try (java.io.ObjectInputStream ois = new java.io.ObjectInputStream(new java.io.FileInputStream(caminho))) {
+                    
+                    // 1. Carrega os dados para o Model
+                    listaProjetos = (ArrayList<Projeto>) ois.readObject();
+                    
+                    // 2. Limpa a View atual
+                    view.getListaProjetosModel().clear();
+                    view.limparQuadro();
+                    
+                    // 3. Preenche a lista lateral com os projetos carregados
+                    for (Projeto p : listaProjetos) {
+                        view.getListaProjetosModel().addElement(p.getNome());
+                    }
+                    
+                    JOptionPane.showMessageDialog(view, "Dados carregados com sucesso de:\n" + caminho, "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                    
+                } catch (java.io.FileNotFoundException ex) {
+                    JOptionPane.showMessageDialog(view, "O ficheiro '" + nomeFicheiro + "' não foi encontrado na pasta FicheirosSalvos.", "Erro - Ficheiro não encontrado", JOptionPane.WARNING_MESSAGE);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(view, "Erro ao carregar dados: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                    ex.printStackTrace();
+                }
+            }
+        });
+        
     }
 
     // Limpa o quadro e desenha todas as tarefas do projeto selecionado
