@@ -177,14 +177,18 @@ public class Interface extends JFrame {
     }
     
     // Método que o Controller vai chamar para adicionar um cartão visual
-    public void adicionarCartaoTarefa(String titulo, String descricao, String prioridade, String data, String estado) {
+    public void adicionarCartaoTarefa(String titulo, String descricao, String prioridade, String data, String estado, 
+                                      java.awt.event.ActionListener acaoEditar, 
+                                      java.awt.event.ActionListener acaoEliminar,
+                                      java.awt.event.ActionListener acaoMover) {
+                                          
         JPanel card = new JPanel(new BorderLayout());
         card.setBackground(Color.WHITE);
         card.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1, true),
                 new EmptyBorder(10, 10, 10, 10)
         ));
-        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 120)); // Aumentado para caber a descrição
+        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 120)); 
         
         // --- TOPO: Título e Botões ---
         JPanel topPanel = new JPanel(new BorderLayout());
@@ -193,11 +197,21 @@ public class Interface extends JFrame {
         
         JPanel btnBoxes = new JPanel(new FlowLayout(FlowLayout.RIGHT, 2, 0));
         btnBoxes.setBackground(Color.WHITE);
-        JButton btnEdit = new JButton("✎"); // Ícone de editar
-        JButton btnDelete = new JButton("🗑"); // Ícone de eliminar
+        
+        JButton btnMove = new JButton("➔"); // NOVO: Botão de mover
+        JButton btnEdit = new JButton("✎"); 
+        JButton btnDelete = new JButton("🗑"); 
+        
+        btnMove.setMargin(new Insets(2, 4, 2, 4));
         btnEdit.setMargin(new Insets(2, 4, 2, 4));
         btnDelete.setMargin(new Insets(2, 4, 2, 4));
         
+        // Ligar os botões às ações passadas pelo Controller
+        if (acaoMover != null) btnMove.addActionListener(acaoMover);
+        if (acaoEditar != null) btnEdit.addActionListener(acaoEditar);
+        if (acaoEliminar != null) btnDelete.addActionListener(acaoEliminar);
+        
+        btnBoxes.add(btnMove);
         btnBoxes.add(btnEdit);
         btnBoxes.add(btnDelete);
         

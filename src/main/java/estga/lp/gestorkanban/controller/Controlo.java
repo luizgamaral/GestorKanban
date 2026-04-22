@@ -136,11 +136,46 @@ private void inicializarEventos() {
         
         if (index != -1) {
             Projeto projetoSelecionado = listaProjetos.get(index);
+            
             // Percorre todas as tarefas do projeto selecionado e desenha-as
             for (Tarefa t : projetoSelecionado.getTarefas()) {
-                view.adicionarCartaoTarefa(t.getTitulo(), t.getDescricao(), t.getPrioridade(), t.getData(), t.getEstado());
+                
+                // 1. Lógica para MOVER a tarefa
+                java.awt.event.ActionListener acaoMover = e -> {
+                    String[] opcoes = {"A Fazer", "Em Progresso", "Concluído"};
+                    String novoEstado = (String) JOptionPane.showInputDialog(
+                            view, "Mover tarefa para a coluna:", "Mover Tarefa",
+                            JOptionPane.QUESTION_MESSAGE, null, opcoes, t.getEstado()
+                    );
+                    if (novoEstado != null) {
+                        t.setEstado(novoEstado); // Altera no Model
+                        atualizarQuadroTarefas(); // Redesenha a View
+                    }
+                };
+
+                // 2. Lógica para EDITAR a tarefa (Opcional, mas já fica a funcionar!)
+                java.awt.event.ActionListener acaoEditar = e -> {
+                    String novoTitulo = JOptionPane.showInputDialog(view, "Editar Título:", t.getTitulo());
+                    if (novoTitulo != null && !novoTitulo.trim().isEmpty()) {
+                        t.setTitulo(novoTitulo);
+                        t.setDescricao(JOptionPane.showInputDialog(view, "Editar Descrição:", t.getDescricao()));
+                        t.setPrioridade(JOptionPane.showInputDialog(view, "Editar Prioridade:", t.getPrioridade()));
+                        atualizarQuadroTarefas();
+                    }
+                };
+
+                // 3. Lógica para ELIMINAR a tarefa
+                java.awt.event.ActionListener acaoEliminar = e -> {
+                    int confirm = JOptionPane.showConfirmDialog(view, "Tem a certeza que deseja eliminar a tarefa '" + t.getTitulo() + "'?", "Confirmar", JOptionPane.YES_NO_OPTION);
+                    if (confirm == JOptionPane.YES_OPTION) {
+                        projetoSelecionado.removerTarefa(t);
+                        atualizarQuadroTarefas();
+                    }
+                };
+
+                // Cria o cartão passando as ações
+                view.adicionarCartaoTarefa(t.getTitulo(), t.getDescricao(), t.getPrioridade(), t.getData(), t.getEstado(), acaoEditar, acaoEliminar, acaoMover);
             }
         }
     }
-
 }
