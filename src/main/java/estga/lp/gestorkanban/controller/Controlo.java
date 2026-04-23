@@ -377,16 +377,12 @@ private void inicializarEventos() {
                     trabalho2.IODataClass io = new trabalho2.IODataClass();
                     String[] linhasCarregadas = io.loadData(caminho);
                     
-                    // Limpa os dados atuais
-                    listaProjetos.clear();
-                    view.getListaProjetosModel().clear();
-                    view.limparQuadro();
                     
                     Projeto projetoAtual = null; // Ajuda a saber a qual projeto as tarefas e membros pertencem
                     
-                    // Reconstrói os objetos a partir do texto
+                    // Reconstrói os objetos a partir do texto e adiciona à lista existente
                     for (String linha : linhasCarregadas) {
-                        // O regex "\\|" é usado para separar pelo |
+                        // O regex "\\|" é usado para separar pelo caractere |
                         String[] partes = linha.split("\\|"); 
                         
                         if (partes[0].equals("PROJETO") && partes.length >= 3) {
@@ -403,7 +399,7 @@ private void inicializarEventos() {
                         }
                     }
                     
-                    JOptionPane.showMessageDialog(view, "Dados carregados com sucesso de:\n" + caminho, "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(view, "Dados adicionados com sucesso a partir de:\n" + caminho, "Sucesso", JOptionPane.INFORMATION_MESSAGE);
                     
                 } catch (RuntimeException ex) {
                     JOptionPane.showMessageDialog(view, "Erro ao carregar ficheiro. Verifique se o ficheiro '" + nomeFicheiro + "' existe na pasta FicheirosSalvos.", "Erro", JOptionPane.ERROR_MESSAGE);
