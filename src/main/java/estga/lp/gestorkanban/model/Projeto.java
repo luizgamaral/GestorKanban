@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 public class Projeto implements Serializable {
     private String nome;
-    private String descricao; // NOVO ATRIBUTO
+    private String descricao; 
     private ArrayList<Tarefa> tarefas;
     private ArrayList<String> equipa;
 

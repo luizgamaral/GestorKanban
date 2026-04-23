@@ -12,7 +12,6 @@ import java.io.Serializable;
  */
 
 public class Tarefa implements Serializable { // Uso de serizalização para guardar as tarefas.
-    // Atributos privados para proteger a integridade dos dados.
     private String titulo;
     private String prioridade;
     private String descricao;

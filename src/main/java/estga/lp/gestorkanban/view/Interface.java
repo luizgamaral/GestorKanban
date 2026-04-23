@@ -110,8 +110,7 @@ public class Interface extends JFrame {
         tituloProjeto.setFont(new Font ("Arial", Font.BOLD, 14));
         panelTitulos.add(tituloGeral);
         panelTitulos.add(tituloProjeto);
-        
-        // Ajustado para incluir o botão de Nova Tarefa
+       
         JPanel panelBotoesDir = new JPanel(new GridLayout(2, 3, 10, 10));
         panelBotoesDir.setOpaque(false);
         
@@ -194,7 +193,7 @@ public class Interface extends JFrame {
         ));
         card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 120)); 
         
-        // --- TOPO: Título e Botões ---
+        // Topo, Título e Botões
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setBackground(Color.WHITE);
         JLabel lblTitulo = new JLabel("<html><b>" + titulo + "</b></html>");
@@ -202,7 +201,7 @@ public class Interface extends JFrame {
         JPanel btnBoxes = new JPanel(new FlowLayout(FlowLayout.RIGHT, 2, 0));
         btnBoxes.setBackground(Color.WHITE);
         
-        JButton btnMove = new JButton("➔"); // NOVO: Botão de mover
+        JButton btnMove = new JButton("➔"); 
         JButton btnEdit = new JButton("✎"); 
         JButton btnDelete = new JButton("🗑"); 
         
@@ -222,27 +221,27 @@ public class Interface extends JFrame {
         topPanel.add(lblTitulo, BorderLayout.CENTER);
         topPanel.add(btnBoxes, BorderLayout.EAST);
         
-        // --- MEIO: Descrição ---
+        // Meio, Descrição 
         JLabel lblDescricao = new JLabel("<html><i style='color:gray;'>" + descricao + "</i></html>");
         lblDescricao.setBorder(new EmptyBorder(5, 0, 5, 0));
 
-        // --- BASE: Informações ---
-        JPanel infoPanel = new JPanel(new GridLayout(3, 2)); // 3 Linhas, 2 Colunas
+        // Base, Informações 
+        JPanel infoPanel = new JPanel(new GridLayout(3, 2)); // linhas / colunas
         infoPanel.setBackground(Color.WHITE);
         
         // Linha 1: Cabeçalhos
         infoPanel.add(new JLabel("Prioridade: "));
         infoPanel.add(new JLabel("Data: "));
         
-        // Linha 2: Valores (COM CORES)
+        // Linha 2: Valores 
         JLabel lblValorPrioridade = new JLabel(prioridade);
         lblValorPrioridade.setFont(new Font("Arial", Font.BOLD, 12)); // Fica a negrito para destacar a cor
         
         // Aplicar a cor dependendo da prioridade
         if (prioridade.equals("Alta")) {
-            lblValorPrioridade.setForeground(Color.RED); // Vermelho
+            lblValorPrioridade.setForeground(Color.RED); 
         } else if (prioridade.equals("Média")) {
-            lblValorPrioridade.setForeground(new Color(204, 153, 0)); // Amarelo/Laranja escuro (para se ler bem no fundo branco)
+            lblValorPrioridade.setForeground(new Color(204, 153, 0)); // Amarelo/Laranja escuro
         } else if (prioridade.equals("Baixa")) {
             lblValorPrioridade.setForeground(new Color(0, 153, 0)); // Verde escuro
         }
@@ -276,7 +275,7 @@ public class Interface extends JFrame {
         }
     }
 
-    // GETTERS para o Controller 
+    // Getters para o Controller 
     public DefaultListModel<String> getListaProjetosModel() { return listaProjetosModel; }
     public JList<String> getListaProjetos() { return listaProjetos; }
     public JButton getBtnNovoProjeto() { return btnNovoProjeto; }

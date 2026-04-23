@@ -39,18 +39,18 @@ private void inicializarEventos() {
         view.getBtnNovoProjeto().addActionListener(e -> {
             String nomeProjeto = JOptionPane.showInputDialog(view, "Introduza o nome do novo projeto: ", "Novo Projeto", JOptionPane.QUESTION_MESSAGE);
             if (nomeProjeto != null && !nomeProjeto.trim().isEmpty()){
-                // 1. Pedir a descrição (NOVO)
+                // 1. Pedir a descrição 
                 String descProjeto = JOptionPane.showInputDialog(view, "Introduza uma descrição para o projeto: ", "Descrição do Projeto", JOptionPane.QUESTION_MESSAGE);
                 if(descProjeto == null) descProjeto = ""; // Se cancelar, fica vazia
                 
-                // 2. Adiciona aos dados (Model)
+                // 2. Adiciona aos dados 
                 Projeto novoProj = new Projeto(nomeProjeto.toUpperCase(), descProjeto);
                 listaProjetos.add(novoProj);
                 
-                // 3. Adiciona à interface (View)
+                // 3. Adiciona à interface 
                 view.getListaProjetosModel().addElement(novoProj.getNome());
                 
-                // Opcional: Seleciona o projeto recém-criado automaticamente
+                // Seleciona o projeto recém-criado automaticamente
                 view.getListaProjetos().setSelectedIndex(listaProjetos.size() - 1);
             }
         });
@@ -73,7 +73,7 @@ private void inicializarEventos() {
                 );
                 
                 if (novoNome != null && !novoNome.trim().isEmpty()){
-                    // 2. Editar a Descrição (NOVO)
+                    // 2. Editar a Descrição 
                     String novaDesc = (String) JOptionPane.showInputDialog(
                             view, 
                             "Editar descrição do projeto:", 
@@ -92,7 +92,7 @@ private void inicializarEventos() {
                         // Atualiza a View (Lista Lateral)
                         view.getListaProjetosModel().set(index, novoNome.toUpperCase());
                         
-                        // Opcional: Se este for o projeto selecionado, atualiza o título na barra de topo se necessário
+                        // Se este for o projeto selecionado, atualiza o título na barra de topo se necessário
                         JOptionPane.showMessageDialog(view, "Projeto atualizado com sucesso!");
                     }
                 }
@@ -109,7 +109,7 @@ private void inicializarEventos() {
                 if (confirmacao == JOptionPane.YES_OPTION){
                     listaProjetos.remove(index);
                     view.getListaProjetosModel().remove(index);
-                    view.limparQuadro(); // NOVO: Limpa o ecrã para não ficarem tarefas "fantasmas"
+                    view.limparQuadro(); // Limpa o ecrã para não ficarem tarefas fantasmas
                 }
             } else {
                 JOptionPane.showMessageDialog(view, "Por favor, selecione um projeto para eliminar.", "Aviso", JOptionPane.WARNING_MESSAGE);
@@ -128,7 +128,7 @@ private void inicializarEventos() {
             int index = view.getListaProjetos().getSelectedIndex();
             if (index != -1) {
                 Projeto projetoSelecionado = listaProjetos.get(index);
-                //  Adicionada a opção "Atribuir Tarefa"
+                //  Adicionada a opção Atribuir Tarefa
                 String[] opcoes = {"Adicionar Membro", "Remover Membro", "Ver Equipa", "Atribuir Tarefa"};
                 
                 int escolha = JOptionPane.showOptionDialog(view, 
@@ -155,7 +155,7 @@ private void inicializarEventos() {
                     
                     if (membroRemover != null) {
                         projetoSelecionado.removerMembro(membroRemover);
-                        // Se remover o membro, as tarefas dele passam a "Sem Membro"
+                        // Se remover o membro, as tarefas dele passam a Sem Membro
                         for (Tarefa t : projetoSelecionado.getTarefas()) {
                             if (t.getMembro().equals(membroRemover)) {
                                 t.setMembro("Sem Membro");
@@ -187,20 +187,20 @@ private void inicializarEventos() {
                         return;
                     }
 
-                    // 1. O utilizador seleciona a tarefa
+                    // 1 seleciona a tarefa
                     Tarefa tarefaSelecionada = (Tarefa) JOptionPane.showInputDialog(view, 
                             "Selecione a tarefa que deseja atribuir:", "Atribuir Tarefa", 
                             JOptionPane.QUESTION_MESSAGE, null, tarefas.toArray(), tarefas.get(0));
 
                     if (tarefaSelecionada != null) {
-                        // 2. Prepara a lista de membros (incluindo "Sem Membro")
+                        // 2 prepara a lista de membros
                         String[] opcoesMembros = new String[equipa.size() + 1];
                         opcoesMembros[0] = "Sem Membro";
                         for (int i = 0; i < equipa.size(); i++) {
                             opcoesMembros[i + 1] = equipa.get(i);
                         }
 
-                        // 3. O utilizador seleciona o membro
+                        // 3 seleciona o membro
                         String membroAtribuido = (String) JOptionPane.showInputDialog(view, 
                                 "Atribuir a tarefa '" + tarefaSelecionada.getTitulo() + "' a qual membro?", "Selecionar Membro", 
                                 JOptionPane.QUESTION_MESSAGE, null, opcoesMembros, tarefaSelecionada.getMembro());
@@ -386,7 +386,7 @@ private void inicializarEventos() {
                     
                     // Reconstrói os objetos a partir do texto
                     for (String linha : linhasCarregadas) {
-                        // O regex "\\|" é usado para separar pelo caractere |
+                        // O regex "\\|" é usado para separar pelo |
                         String[] partes = linha.split("\\|"); 
                         
                         if (partes[0].equals("PROJETO") && partes.length >= 3) {
@@ -520,7 +520,7 @@ private void inicializarEventos() {
                     }
                 };
 
-                // 3. Lógica para ELIMINAR a tarefa
+                // 3. Lógica para eliminar a tarefa
                 java.awt.event.ActionListener acaoEliminar = e -> {
                     int confirm = JOptionPane.showConfirmDialog(view, "Tem a certeza que deseja eliminar a tarefa '" + t.getTitulo() + "'?", "Confirmar", JOptionPane.YES_NO_OPTION);
                     if (confirm == JOptionPane.YES_OPTION) {

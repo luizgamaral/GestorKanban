@@ -31,10 +31,10 @@ public class GestorKanban {
         SwingUtilities.invokeLater(new Runnable(){
             @Override
             public void run(){
-                // 1. Cria a Interface (View)
+                // 1. Cria a Interface 
                 Interface gui = new Interface();
                 
-                // 2. Cria o Controlo (Controller) e passa a Interface para ele controlar
+                // 2. Cria o Controlo Controller e passa a Interface para ele controlar
                 Controlo controlo = new Controlo(gui);
                 
                 // 3. Mostra a interface
