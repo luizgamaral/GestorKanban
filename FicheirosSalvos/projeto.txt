@@ -1,0 +1,3 @@
+PROJETO|LUIZ|Fazer tpc
+MEMBRO|Luiz
+TAREFA|dadad|adada|Média|11/12/2121|Em Progresso|Luiz
